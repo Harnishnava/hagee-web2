@@ -1,12 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
-import {
-  DocumentProcessingService,
-  ProcessingResult,
-  BatchProcessingResult,
-  DocumentProcessingOptions,
-} from "@/services/DocumentProcessingService";
+import { ProcessingResult, DocumentProcessingService } from "@/services/DocumentProcessingService";
+
+export interface BatchProcessingResult {
+  results: ProcessingResult[];
+  totalFiles: number;
+  successfulFiles: number;
+  failedFiles: number;
+  totalProcessingTime: number;
+};
 import { QuizQuestion } from "@/services/GroqService";
 
 export interface AIConfiguration {
@@ -151,7 +154,9 @@ export function DocumentProcessingProvider({
   }, [aiConfig.selectedGroqModel, aiConfig.selectedMistralModel]);
 
   const processFiles = useCallback(
-    async (files: File[]): Promise<BatchProcessingResult> => {
+    async function processBatch(
+      files: File[]
+    ): Promise<BatchProcessingResult> {
       if (files.length === 0) {
         return {
           results: [],
@@ -192,7 +197,7 @@ export function DocumentProcessingProvider({
               questionType: aiConfig.questionType,
             },
           },
-          (completed, total, currentFile) => {
+          (completed: number, total: number, currentFile: string) => {
             const percentage = Math.round((completed / total) * 100);
             setProcessingProgress({
               isProcessing: completed < total,

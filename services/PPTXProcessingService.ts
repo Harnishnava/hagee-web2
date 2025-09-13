@@ -1,6 +1,5 @@
-import JSZip from 'jszip';
 import { XMLParser } from 'fast-xml-parser';
-import { MistralOCRService, OCRResult } from './MistralOCRService';
+import { MistralOCRService } from './MistralOCRService';
 
 export interface PPTXProcessingResult {
   success: boolean;
@@ -31,12 +30,11 @@ export class PPTXProcessingService {
     try {
       // Dynamic imports to ensure client-side only loading
       const JSZip = (await import('jszip')).default;
-      const { XMLParser } = await import('fast-xml-parser');
       
       const arrayBuffer = await file.arrayBuffer();
       const zip = await JSZip.loadAsync(arrayBuffer);
       
-      let slideTexts: string[] = [];
+      const slideTexts: string[] = [];
       let slideCount = 0;
       
       // Extract text from slides
@@ -56,7 +54,7 @@ export class PPTXProcessingService {
       }
       
       // Extract images and process with OCR if available
-      let imageTexts: string[] = [];
+      const imageTexts: string[] = [];
       if (this.mistralOCR) {
         const imageFiles = Object.keys(zip.files).filter(name => 
           name.startsWith('ppt/media/') && /\.(jpg|jpeg|png|gif)$/i.test(name)
@@ -98,6 +96,7 @@ export class PPTXProcessingService {
 
   private extractTextFromSlideXML(xmlContent: string): string {
     try {
+      // Create XML parser
       const parsed = this.xmlParser.parse(xmlContent);
       const texts: string[] = [];
       

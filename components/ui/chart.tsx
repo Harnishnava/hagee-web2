@@ -118,11 +118,18 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<"div"> & {
+}: {
+    active?: boolean
+    payload?: Array<{ dataKey?: string; name?: string; value?: number; color?: string; payload?: Record<string, unknown> }>
+    className?: string
+    indicator?: "line" | "dot" | "dashed"
     hideLabel?: boolean
     hideIndicator?: boolean
-    indicator?: "line" | "dot" | "dashed"
+    label?: React.ReactNode
+    labelFormatter?: (label: React.ReactNode, payload: Array<{ dataKey?: string; name?: string; value?: number }>) => React.ReactNode
+    labelClassName?: string
+    formatter?: (value: number, name: string, item: { dataKey?: string; name?: string; value?: number }, index: number, payload: Record<string, unknown> | undefined) => React.ReactNode
+    color?: string
     nameKey?: string
     labelKey?: string
   }) {
@@ -182,7 +189,7 @@ function ChartTooltipContent({
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
-          const indicatorColor = color || item.payload.fill || item.color
+          const indicatorColor = color || item.payload?.fill || item.color
 
           return (
             <div
@@ -211,12 +218,10 @@ function ChartTooltipContent({
                             "my-0.5": nestLabel && indicator === "dashed",
                           }
                         )}
-                        style={
-                          {
-                            "--color-bg": indicatorColor,
-                            "--color-border": indicatorColor,
-                          } as React.CSSProperties
-                        }
+                        style={{
+                          "--color-bg": indicatorColor || '#ccc',
+                          "--color-border": indicatorColor || '#ccc',
+                        } as React.CSSProperties}
                       />
                     )
                   )}
@@ -256,8 +261,9 @@ function ChartLegendContent({
   payload,
   verticalAlign = "bottom",
   nameKey,
-}: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+}: React.ComponentProps<"div"> & {
+    payload?: Array<{ dataKey?: string; value?: string; color?: string }>
+    verticalAlign?: "top" | "middle" | "bottom"
     hideIcon?: boolean
     nameKey?: string
   }) {

@@ -1,4 +1,5 @@
-import mammoth from 'mammoth';
+// Document processing service for DOCX files
+
 import { MistralOCRService, OCRResult } from './MistralOCRService';
 
 export interface DOCXProcessingResult {
@@ -23,15 +24,16 @@ export class DOCXProcessingService {
     
     try {
       // Dynamic import to ensure client-side only loading
-      const mammoth = await import('mammoth');
+      const { extractRawText } = await import('mammoth');
       
       const arrayBuffer = await file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer });
+      const result = await extractRawText({ arrayBuffer });
       
       // Extract images if present and process with OCR
-      let imageText = '';
+      const imageText = '';
       if (this.mistralOCR) {
-        const imageResult = await mammoth.images.imgElement(function(image) {
+        const { images } = await import('mammoth');
+        const imageResult = await images.imgElement(function(image) {
           return image.read("base64").then(function(imageBuffer) {
             // Store image for OCR processing
             return {

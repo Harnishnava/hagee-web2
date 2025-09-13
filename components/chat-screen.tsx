@@ -33,6 +33,7 @@ import {
   Copy,
 } from "lucide-react";
 import { useDocumentProcessing } from "@/contexts/DocumentProcessingContext";
+import { ProcessingResult } from "@/services/DocumentProcessingService";
 import {
   chatService,
   ChatSession,
@@ -284,7 +285,7 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ""}`;
 
       // Add a system message about the processed documents
       const processedCount = batchResult.results.filter(
-        (r) => r.success
+        (r: ProcessingResult) => r.success
       ).length;
       const failedCount = batchResult.results.length - processedCount;
 

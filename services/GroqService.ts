@@ -148,7 +148,7 @@ Generate exactly ${numQuestions} questions following this format. Return ONLY th
       console.log("Raw AI response preview:", content.substring(0, 200));
 
       // Clean the content first
-      let cleanedContent = this.cleanResponseContent(content);
+      const cleanedContent = this.cleanResponseContent(content);
       console.log("Cleaned content length:", cleanedContent.length);
 
       // Extract JSON from the cleaned content
@@ -164,7 +164,7 @@ Generate exactly ${numQuestions} questions following this format. Return ONLY th
       let parsed;
       try {
         parsed = JSON.parse(jsonString);
-      } catch (parseError) {
+      } catch (_) {
         console.log("Initial JSON parse failed, attempting repair...");
         const repairedJson = this.repairJsonString(jsonString);
         console.log("Repaired JSON preview:", repairedJson.substring(0, 200));
@@ -334,7 +334,7 @@ Generate exactly ${numQuestions} questions following this format. Return ONLY th
       /("(?:question|explanation|correctAnswer)"\s*:\s*")([^"]*(?:\\.[^"]*)*?)("(?:\s*[,}]))/g,
       (match, prefix, content, suffix) => {
         // Fix unescaped quotes in the content
-        let fixedContent = content
+        const fixedContent = content
           // First, temporarily replace properly escaped quotes
           .replace(/\\"/g, "\u0001") // Temporary marker for escaped quotes
           // Then escape any remaining unescaped quotes
@@ -365,7 +365,7 @@ Generate exactly ${numQuestions} questions following this format. Return ONLY th
       if (colonIndex === -1) return line;
 
       const beforeValue = line.substring(0, colonIndex + 2).trim();
-      let afterValue = line.substring(colonIndex + 2).trim();
+      const afterValue = line.substring(colonIndex + 2).trim();
 
       // Check if this is a string value (starts with quote)
       if (!afterValue.startsWith('"')) return line;
