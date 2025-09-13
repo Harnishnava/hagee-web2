@@ -1,30 +1,36 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, Mail, Lock, Sparkles, ArrowLeft } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Eye, EyeOff, Mail, Lock, Sparkles, ArrowLeft } from "lucide-react";
 
 interface LoginScreenProps {
-  onLogin: () => void
-  onBack: () => void
+  onLogin: () => void;
+  onBack: () => void;
 }
 
 export function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Simple validation for demo
     if (email && password) {
-      onLogin()
+      onLogin();
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4">
@@ -89,7 +95,11 @@ export function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -105,7 +115,7 @@ export function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
 
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <button className="text-primary hover:text-primary/80 font-medium transition-colors">
                 Sign up for free
               </button>
@@ -114,5 +124,5 @@ export function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

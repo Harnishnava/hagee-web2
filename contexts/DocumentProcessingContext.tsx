@@ -118,7 +118,7 @@ export function DocumentProcessingProvider({
   children: React.ReactNode;
 }) {
   const [aiConfig, setAIConfig] = useState<AIConfiguration>({
-    selectedGroqModel: "", // No default - user must select
+    selectedGroqModel: "llama-3.3-70b-versatile", // Default to first available model
     selectedMistralModel: "pixtral-12b-2409",
     generateQuiz: true,
     numQuestions: 5,
@@ -180,9 +180,9 @@ export function DocumentProcessingProvider({
         const batchResult = await service.processBatch(
           files,
           {
-            groqApiKey: process.env.NEXTJS_PUBLIC_GROQ_API_KEY || undefined,
+            groqApiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY || undefined,
             mistralApiKey:
-              process.env.NEXTJS_PUBLIC_MISTRAL_API_KEY || undefined,
+              process.env.NEXT_PUBLIC_MISTRAL_API_KEY || undefined,
             selectedGroqModel: aiConfig.selectedGroqModel,
             selectedMistralModel: aiConfig.selectedMistralModel,
             generateQuiz: aiConfig.generateQuiz,
@@ -243,8 +243,8 @@ export function DocumentProcessingProvider({
 
       try {
         const result = await service.processDocument(file, {
-          groqApiKey: process.env.NEXTJS_PUBLIC_GROQ_API_KEY || undefined,
-          mistralApiKey: process.env.NEXTJS_PUBLIC_MISTRAL_API_KEY || undefined,
+          groqApiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY || undefined,
+          mistralApiKey: process.env.NEXT_PUBLIC_MISTRAL_API_KEY || undefined,
           selectedGroqModel: aiConfig.selectedGroqModel,
           selectedMistralModel: aiConfig.selectedMistralModel,
           generateQuiz: aiConfig.generateQuiz,

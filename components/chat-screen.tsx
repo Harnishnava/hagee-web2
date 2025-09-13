@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   MessageCircle,
   Send,
@@ -25,21 +25,25 @@ import {
   FileText,
   Image as ImageIcon,
   Trash2,
-  Download,
   AlertTriangle,
   Loader2,
   Bot,
   User,
   X,
   Copy,
-  RotateCcw,
 } from "lucide-react";
 import { useDocumentProcessing } from "@/contexts/DocumentProcessingContext";
-import { chatService, ChatSession, ChatMessage, ChatConfig, ChatAttachment } from "@/services/ChatService";
-import { MistralOCRService } from "@/services/MistralOCRService";
+import {
+  chatService,
+  ChatSession,
+  ChatMessage,
+  ChatConfig,
+  ChatAttachment,
+} from "@/services/ChatService";
 
 export function ChatScreen() {
-  const { availableModels, processFiles: processDocuments } = useDocumentProcessing();
+  const { availableModels, processFiles: processDocuments } =
+    useDocumentProcessing();
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -54,9 +58,13 @@ export function ChatScreen() {
 
   // Get model-specific system prompt
   const getSystemPromptForModel = (modelId: string): string => {
-    const basePrompt = "You are an expert educational tutor and learning guide for students. Your role is to help students understand their study materials and learn effectively.";
-    
-    if (modelId.includes('llama-3.1-70b') || modelId.includes('llama-3.3-70b')) {
+    const basePrompt =
+      "You are an expert educational tutor and learning guide for students. Your role is to help students understand their study materials and learn effectively.";
+
+    if (
+      modelId.includes("llama-3.1-70b") ||
+      modelId.includes("llama-3.3-70b")
+    ) {
       return `${basePrompt}
 
 COMMUNICATION STYLE:
@@ -110,10 +118,10 @@ When analyzing uploaded documents:
 
   // Chat configuration
   const [chatConfig, setChatConfig] = useState<ChatConfig>({
-    selectedModel: 'llama-3.1-70b-versatile',
+    selectedModel: "llama-3.1-70b-versatile",
     temperature: 0.7,
     maxTokens: 2048,
-    systemPrompt: getSystemPromptForModel('llama-3.1-70b-versatile'),
+    systemPrompt: getSystemPromptForModel("llama-3.1-70b-versatile"),
     enableDocumentContext: true,
     contextLimit: 80, // Use 80% of model's context limit
   });
@@ -122,7 +130,7 @@ When analyzing uploaded documents:
   useEffect(() => {
     const loadedSessions = chatService.getSessions();
     setSessions(loadedSessions);
-    
+
     if (loadedSessions.length > 0 && !activeSessionId) {
       setActiveSessionId(loadedSessions[0].id);
     }
@@ -140,9 +148,9 @@ When analyzing uploaded documents:
 
   // Update system prompt when model changes
   useEffect(() => {
-    setChatConfig(prev => ({
+    setChatConfig((prev) => ({
       ...prev,
-      systemPrompt: getSystemPromptForModel(prev.selectedModel)
+      systemPrompt: getSystemPromptForModel(prev.selectedModel),
     }));
   }, [chatConfig.selectedModel]);
 
@@ -152,42 +160,63 @@ When analyzing uploaded documents:
   }, [messages, streamingMessage]);
 
   const createNewSession = useCallback(() => {
-    const session = chatService.createSession("New Chat", chatConfig.selectedModel);
-    setSessions(prev => [session, ...prev]);
+    const session = chatService.createSession(
+      "New Chat",
+      chatConfig.selectedModel
+    );
+    setSessions((prev) => [session, ...prev]);
     setActiveSessionId(session.id);
     setMessages([]);
   }, [chatConfig.selectedModel]);
 
-  const deleteSession = useCallback((sessionId: string) => {
-    chatService.deleteSession(sessionId);
-    setSessions(prev => prev.filter(s => s.id !== sessionId));
-    
-    if (activeSessionId === sessionId) {
-      const remainingSessions = sessions.filter(s => s.id !== sessionId);
-      if (remainingSessions.length > 0) {
-        setActiveSessionId(remainingSessions[0].id);
-      } else {
-        setActiveSessionId(null);
-        setMessages([]);
+  const deleteSession = useCallback(
+    (sessionId: string) => {
+      chatService.deleteSession(sessionId);
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+
+      if (activeSessionId === sessionId) {
+        const remainingSessions = sessions.filter((s) => s.id !== sessionId);
+        if (remainingSessions.length > 0) {
+          setActiveSessionId(remainingSessions[0].id);
+        } else {
+          setActiveSessionId(null);
+          setMessages([]);
+        }
       }
-    }
-  }, [activeSessionId, sessions]);
+    },
+    [activeSessionId, sessions]
+  );
 
   const handleFileSelect = useCallback((files: FileList | null) => {
     if (!files) return;
-    
+
     const fileArray = Array.from(files);
-    const validFiles = fileArray.filter(file => {
-      const allowedTypes = ['pdf', 'docx', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
-      const fileExtension = file.name.split('.').pop()?.toLowerCase();
-      return fileExtension && allowedTypes.includes(fileExtension) && file.size <= 50 * 1024 * 1024;
+    const validFiles = fileArray.filter((file) => {
+      const allowedTypes = [
+        "pdf",
+        "docx",
+        "pptx",
+        "txt",
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "bmp",
+        "webp",
+      ];
+      const fileExtension = file.name.split(".").pop()?.toLowerCase();
+      return (
+        fileExtension &&
+        allowedTypes.includes(fileExtension) &&
+        file.size <= 50 * 1024 * 1024
+      );
     });
 
-    setSelectedFiles(prev => [...prev, ...validFiles]);
+    setSelectedFiles((prev) => [...prev, ...validFiles]);
   }, []);
 
   const removeFile = useCallback((index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const processFiles = useCallback(async () => {
@@ -197,17 +226,17 @@ When analyzing uploaded documents:
     try {
       // Process files using the comprehensive document processing service
       const batchResult = await processDocuments(selectedFiles);
-      
+
       for (const result of batchResult.results) {
-        let content = '';
-        let type: 'document' | 'image' = 'document';
+        let content = "";
+        let type: "document" | "image" = "document";
 
         // Determine file type
-        const fileExtension = result.fileName.split('.').pop()?.toLowerCase();
-        const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
-        
-        if (imageTypes.includes(fileExtension || '')) {
-          type = 'image';
+        const fileExtension = result.fileName.split(".").pop()?.toLowerCase();
+        const imageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
+
+        if (imageTypes.includes(fileExtension || "")) {
+          type = "image";
         }
 
         if (result.success && result.text) {
@@ -221,17 +250,29 @@ Processing Time: ${result.processingTime}ms
 EXTRACTED CONTENT:
 ${result.text}
 
-${result.metadata?.pageCount ? `Pages: ${result.metadata.pageCount}\n` : ''}
-${result.metadata?.slideCount ? `Slides: ${result.metadata.slideCount}\n` : ''}
-${result.metadata?.ocrUsed ? 'Note: OCR was used to extract text from images\n' : ''}
-${result.quiz ? `\nQUIZ AVAILABLE: ${result.quiz.length} questions generated\n` : ''}
-${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
+${result.metadata?.pageCount ? `Pages: ${result.metadata.pageCount}\n` : ""}
+${result.metadata?.slideCount ? `Slides: ${result.metadata.slideCount}\n` : ""}
+${
+  result.metadata?.ocrUsed
+    ? "Note: OCR was used to extract text from images\n"
+    : ""
+}
+${
+  result.quiz
+    ? `\nQUIZ AVAILABLE: ${result.quiz.length} questions generated\n`
+    : ""
+}
+${result.error ? `\nProcessing Notes: ${result.error}\n` : ""}`;
         } else {
-          content = `Failed to process ${result.fileName}: ${result.error || 'Unknown error'}`;
+          content = `Failed to process ${result.fileName}: ${
+            result.error || "Unknown error"
+          }`;
         }
 
         const attachment: ChatAttachment = {
-          id: Date.now().toString(),
+          id: `attachment-${Date.now()}-${Math.random()
+            .toString(36)
+            .substr(2, 9)}`,
           name: result.fileName,
           type,
           size: result.fileSize,
@@ -242,17 +283,20 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
       }
 
       // Add a system message about the processed documents
-      const processedCount = batchResult.results.filter(r => r.success).length;
+      const processedCount = batchResult.results.filter(
+        (r) => r.success
+      ).length;
       const failedCount = batchResult.results.length - processedCount;
-      
+
       let statusMessage = `📚 Processed ${processedCount} document(s) successfully`;
       if (failedCount > 0) {
         statusMessage += ` (${failedCount} failed)`;
       }
-      statusMessage += '. I can now help you understand and study these materials!';
+      statusMessage +=
+        ". I can now help you understand and study these materials!";
 
       chatService.addMessage(activeSessionId, {
-        role: 'assistant',
+        role: "assistant",
         content: statusMessage,
       });
 
@@ -264,15 +308,17 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
 
       setSelectedFiles([]);
     } catch (error) {
-      console.error('File processing error:', error);
-      
+      console.error("File processing error:", error);
+
       // Add error message to chat
       if (activeSessionId) {
         chatService.addMessage(activeSessionId, {
-          role: 'assistant',
-          content: `❌ Sorry, I encountered an error processing your files: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again or contact support if the issue persists.`,
+          role: "assistant",
+          content: `❌ Sorry, I encountered an error processing your files: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }. Please try again or contact support if the issue persists.`,
         });
-        
+
         const updatedSession = chatService.getSession(activeSessionId);
         if (updatedSession) {
           setMessages([...updatedSession.messages]);
@@ -294,10 +340,10 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
     try {
       // Add user message to UI immediately
       const userMsg = chatService.addMessage(activeSessionId, {
-        role: 'user',
+        role: "user",
         content: userMessage,
       });
-      setMessages(prev => [...prev, userMsg]);
+      setMessages((prev) => [...prev, userMsg]);
 
       // Send to AI and stream response
       await chatService.sendMessage(
@@ -305,7 +351,7 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
         userMessage,
         chatConfig,
         (chunk) => {
-          setStreamingMessage(prev => prev + chunk);
+          setStreamingMessage((prev) => prev + chunk);
         }
       );
 
@@ -316,30 +362,37 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
       }
       setStreamingMessage("");
     } catch (error) {
-      console.error('Send message error:', error);
+      console.error("Send message error:", error);
       // Add error message
       const errorMsg = chatService.addMessage(activeSessionId, {
-        role: 'assistant',
-        content: `Error: ${error instanceof Error ? error.message : 'Failed to send message'}`,
+        role: "assistant",
+        content: `Error: ${
+          error instanceof Error ? error.message : "Failed to send message"
+        }`,
       });
-      setMessages(prev => [...prev, errorMsg]);
+      setMessages((prev) => [...prev, errorMsg]);
     } finally {
       setIsLoading(false);
     }
   }, [inputMessage, activeSessionId, isLoading, chatConfig]);
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  }, [sendMessage]);
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    },
+    [sendMessage]
+  );
 
   const copyMessage = useCallback((content: string) => {
     navigator.clipboard.writeText(content);
   }, []);
 
-  const activeSession = activeSessionId ? chatService.getSession(activeSessionId) : null;
+  const activeSession = activeSessionId
+    ? chatService.getSession(activeSessionId)
+    : null;
 
   return (
     <div className="h-full flex flex-col space-y-4">
@@ -384,8 +437,8 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                     key={session.id}
                     className={`p-3 rounded-lg cursor-pointer transition-colors ${
                       activeSessionId === session.id
-                        ? 'bg-primary/10 border border-primary/20'
-                        : 'bg-muted/50 hover:bg-muted'
+                        ? "bg-primary/10 border border-primary/20"
+                        : "bg-muted/50 hover:bg-muted"
                     }`}
                     onClick={() => setActiveSessionId(session.id)}
                   >
@@ -440,7 +493,10 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                     <Select
                       value={chatConfig.selectedModel}
                       onValueChange={(value) =>
-                        setChatConfig(prev => ({ ...prev, selectedModel: value }))
+                        setChatConfig((prev) => ({
+                          ...prev,
+                          selectedModel: value,
+                        }))
                       }
                     >
                       <SelectTrigger>
@@ -448,7 +504,7 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                       </SelectTrigger>
                       <SelectContent>
                         {availableModels
-                          .filter(model => model.provider === 'groq')
+                          .filter((model) => model.provider === "groq")
                           .map((model) => (
                             <SelectItem key={model.id} value={model.id}>
                               {model.name}
@@ -469,7 +525,10 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                     <Select
                       value={chatConfig.temperature.toString()}
                       onValueChange={(value) =>
-                        setChatConfig(prev => ({ ...prev, temperature: parseFloat(value) }))
+                        setChatConfig((prev) => ({
+                          ...prev,
+                          temperature: parseFloat(value),
+                        }))
                       }
                     >
                       <SelectTrigger>
@@ -489,7 +548,10 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                     <Select
                       value={chatConfig.contextLimit.toString()}
                       onValueChange={(value) =>
-                        setChatConfig(prev => ({ ...prev, contextLimit: parseInt(value) }))
+                        setChatConfig((prev) => ({
+                          ...prev,
+                          contextLimit: parseInt(value),
+                        }))
                       }
                     >
                       <SelectTrigger>
@@ -510,7 +572,10 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                       id="document-context"
                       checked={chatConfig.enableDocumentContext}
                       onCheckedChange={(checked) =>
-                        setChatConfig(prev => ({ ...prev, enableDocumentContext: checked }))
+                        setChatConfig((prev) => ({
+                          ...prev,
+                          enableDocumentContext: checked,
+                        }))
                       }
                     />
                     <Label htmlFor="document-context">
@@ -523,7 +588,10 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                     <Textarea
                       value={chatConfig.systemPrompt}
                       onChange={(e) =>
-                        setChatConfig(prev => ({ ...prev, systemPrompt: e.target.value }))
+                        setChatConfig((prev) => ({
+                          ...prev,
+                          systemPrompt: e.target.value,
+                        }))
                       }
                       className="mt-1"
                       rows={3}
@@ -548,8 +616,12 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {activeSession.documents.map((doc) => (
-                          <Badge key={doc.id} variant="secondary" className="flex items-center gap-1">
-                            {doc.type === 'image' ? (
+                          <Badge
+                            key={doc.id}
+                            variant="secondary"
+                            className="flex items-center gap-1"
+                          >
+                            {doc.type === "image" ? (
                               <ImageIcon className="w-3 h-3" />
                             ) : (
                               <FileText className="w-3 h-3" />
@@ -559,7 +631,12 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                               variant="ghost"
                               size="sm"
                               className="h-4 w-4 p-0 ml-1"
-                              onClick={() => chatService.removeDocumentFromSession(activeSessionId!, doc.id)}
+                              onClick={() =>
+                                chatService.removeDocumentFromSession(
+                                  activeSessionId!,
+                                  doc.id
+                                )
+                              }
                             >
                               <X className="w-3 h-3" />
                             </Button>
@@ -574,7 +651,9 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                     {messages.length === 0 && (
                       <div className="text-center text-muted-foreground py-12">
                         <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                        <h3 className="font-semibold mb-2">Start a conversation</h3>
+                        <h3 className="font-semibold mb-2">
+                          Start a conversation
+                        </h3>
                         <p className="text-sm">
                           Ask me anything or upload documents for context!
                         </p>
@@ -585,20 +664,22 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                       <div
                         key={message.id}
                         className={`flex gap-3 ${
-                          message.role === 'user' ? 'justify-end' : 'justify-start'
+                          message.role === "user"
+                            ? "justify-end"
+                            : "justify-start"
                         }`}
                       >
-                        {message.role === 'assistant' && (
+                        {message.role === "assistant" && (
                           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                             <Bot className="w-4 h-4 text-primary" />
                           </div>
                         )}
-                        
+
                         <div
                           className={`max-w-[80%] rounded-lg p-3 ${
-                            message.role === 'user'
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted'
+                            message.role === "user"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted"
                           }`}
                         >
                           <div className="whitespace-pre-wrap text-sm">
@@ -619,7 +700,7 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                           </div>
                         </div>
 
-                        {message.role === 'user' && (
+                        {message.role === "user" && (
                           <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
                             <User className="w-4 h-4 text-secondary" />
                           </div>
@@ -660,7 +741,7 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                           ) : (
                             <Paperclip className="w-4 h-4 mr-1" />
                           )}
-                          {processingFiles ? 'Processing...' : 'Add to Chat'}
+                          {processingFiles ? "Processing..." : "Add to Chat"}
                         </Button>
                       </div>
                       <div className="space-y-2 max-h-32 overflow-y-auto">
@@ -737,7 +818,9 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ''}`;
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
                     <MessageCircle className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">No Chat Selected</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      No Chat Selected
+                    </h3>
                     <p className="text-sm mb-4">
                       Create a new chat session to get started
                     </p>

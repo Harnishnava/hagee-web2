@@ -15,12 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Upload,
-  ImageIcon,
-  Camera,
-  Trophy,
   Star,
   Zap,
-  Sparkles,
   Target,
   Gamepad2,
   Settings,
@@ -30,7 +26,6 @@ import {
   XCircle,
   Loader2,
   Trash2,
-  Download,
 } from "lucide-react";
 import { useDocumentProcessing } from "@/contexts/DocumentProcessingContext";
 import { useState, useCallback } from "react";
@@ -44,8 +39,7 @@ export function DocumentUploadScreen() {
     availableModels,
     processingProgress,
     results,
-    processFiles,
-    processSingleFile,
+
     clearResults,
     testServices,
   } = useDocumentProcessing();
@@ -56,7 +50,7 @@ export function DocumentUploadScreen() {
     groq: boolean;
     mistral: boolean;
   }>({ groq: false, mistral: false });
-  const { processDocument, isProcessing } = useDocumentProcessor();
+  const { processDocument } = useDocumentProcessor();
 
   // React Native-style inline styles object
   const styles = {
@@ -156,7 +150,9 @@ export function DocumentUploadScreen() {
             );
             if (result.quiz) {
               const quizData = {
-                id: Date.now().toString(),
+                id: `quiz-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .substr(2, 9)}`,
                 title: `Quiz from ${file.name}`,
                 questions: result.quiz,
                 createdAt: new Date().toISOString(),
@@ -622,8 +618,8 @@ export function DocumentUploadScreen() {
                   No Results Yet
                 </h3>
                 <p className="text-gray-600 text-base mb-6 leading-relaxed">
-                  Upload and process documents to see results here. You'll get
-                  extracted text, quiz questions, and processing statistics.
+                  Upload and process documents to see results here. You&apos;ll
+                  get extracted text, quiz questions, and processing statistics.
                 </p>
               </CardContent>
             </Card>

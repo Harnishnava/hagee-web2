@@ -74,7 +74,7 @@ export class ChatService {
   // Session Management (localStorage for now, database-ready structure)
   createSession(title: string, model: string): ChatSession {
     const session: ChatSession = {
-      id: Date.now().toString(),
+      id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       title: title || 'New Chat',
       messages: [],
       documents: [],
@@ -130,7 +130,7 @@ export class ChatService {
 
     const newMessage: ChatMessage = {
       ...message,
-      id: Date.now().toString(),
+      id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date(),
     };
 

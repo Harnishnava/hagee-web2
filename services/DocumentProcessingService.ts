@@ -61,7 +61,7 @@ export class DocumentProcessingService {
     }
     
     if (options.groqApiKey) {
-      this.groqService = new GroqService(options.selectedGroqModel);
+      this.groqService = new GroqService(options.selectedGroqModel || 'llama-3.3-70b-versatile');
     }
   }
 
