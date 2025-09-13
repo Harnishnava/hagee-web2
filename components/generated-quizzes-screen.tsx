@@ -17,11 +17,6 @@ interface QuizQuestion {
   difficulty: 'easy' | 'medium' | 'hard'
 }
 
-interface StoredQuiz {
-  quiz: QuizQuestion[]
-  timestamp: number
-  sourceFiles: string[]
-}
 
 interface QuizAttempt {
   id: string
@@ -62,7 +57,7 @@ export function GeneratedQuizzesScreen() {
       try {
         const parsedQuizzes = JSON.parse(stored)
         // Convert the stored format to QuizAttempt format
-        const quizAttempts: QuizAttempt[] = parsedQuizzes.map((quiz: any) => ({
+        const quizAttempts: QuizAttempt[] = parsedQuizzes.map((quiz: { id: string; title: string; questions: QuizQuestion[]; createdAt: string }) => ({
           id: quiz.id,
           title: quiz.title,
           questions: quiz.questions,
@@ -89,7 +84,7 @@ export function GeneratedQuizzesScreen() {
     if (stored) {
       try {
         const parsedQuizzes = JSON.parse(stored)
-        const filteredQuizzes = parsedQuizzes.filter((quiz: any) => quiz.id !== quizId)
+        const filteredQuizzes = parsedQuizzes.filter((quiz: { id: string }) => quiz.id !== quizId)
         localStorage.setItem('generatedQuizzes', JSON.stringify(filteredQuizzes))
         console.log('Quiz deleted:', quizId)
       } catch (error) {
@@ -196,16 +191,6 @@ export function GeneratedQuizzesScreen() {
     return "from-red-500 to-pink-500"
   }
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
-      case "pending":
-        return "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
-      default:
-        return "bg-muted text-muted-foreground"
-    }
-  }
 
   // Show active quiz interface
   if (activeQuiz) {

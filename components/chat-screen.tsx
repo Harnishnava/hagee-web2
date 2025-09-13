@@ -327,7 +327,7 @@ ${result.error ? `\nProcessing Notes: ${result.error}\n` : ""}`;
     } finally {
       setProcessingFiles(false);
     }
-  }, [activeSessionId, selectedFiles]);
+  }, [activeSessionId, selectedFiles, processDocuments]);
 
   const sendMessage = useCallback(async () => {
     if (!inputMessage.trim() || !activeSessionId || isLoading) return;

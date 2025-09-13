@@ -684,7 +684,7 @@ export function DocumentUploadScreen() {
                             <div className="space-y-3">
                               {result.quiz
                                 .slice(0, 2)
-                                .map((question: any, qIndex: number) => (
+                                .map((question: { question: string; options?: string[]; correctAnswer: string | boolean | number }, qIndex: number) => (
                                   <div
                                     key={qIndex}
                                     className="p-3 bg-blue-50 rounded-lg"
@@ -698,7 +698,7 @@ export function DocumentUploadScreen() {
                                           <div
                                             key={oIndex}
                                             className={`p-2 rounded ${
-                                              oIndex === question.correctAnswer
+                                              oIndex === Number(question.correctAnswer)
                                                 ? "bg-green-100 text-green-800"
                                                 : "bg-white"
                                             }`}
